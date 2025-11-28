@@ -1,22 +1,154 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PROJECT KRS — Demo Shop</title>
+  <title>PROJECT KRS — Cyber Shop Demo</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <header>
-    <h1>PROJECT KRS</h1>
-    <nav>
-      <a href="cart.html">Cart <span id="cart-count"></span></a>
-    </nav>
+<body class="body-bg">
+
+  <header class="top-bar">
+    <div class="top-left">
+      <div class="logo-pill">
+        <div class="logo-dot"></div>
+        <span class="logo-text">PROJECT KRS</span>
+      </div>
+      <span class="top-tag">Cyber Awareness • Scam Demo Environment</span>
+    </div>
+
+    <div class="top-right">
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        Live Demo
+      </div>
+      <a href="cart.html" class="cart-pill">
+        <span class="cart-icon">🛒</span>
+        <span>Cart</span>
+        <span id="cart-count" class="cart-count-badge"></span>
+      </a>
+    </div>
   </header>
 
-  <main>
-    <section id="products-grid" class="product-grid"></section>
+  <main class="page-layout">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Scenario</div>
+        <p class="sidebar-text">
+          This is a <strong>fake shopping site</strong> built to demonstrate how
+          scam websites can look trustworthy while stealing your data.
+        </p>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Filters (visual only)</div>
+        <div class="chip-row">
+          <button class="chip active">All</button>
+          <button class="chip">Electronics</button>
+          <button class="chip">Luxury</button>
+        </div>
+        <div class="chip-row">
+          <button class="chip">High value</button>
+          <button class="chip">Trending</button>
+        </div>
+        <p class="sidebar-subnote">
+          Filters are just UI here — real scammers often fake filters and trust
+          badges to make you feel safe.
+        </p>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Risk Indicators</div>
+        <ul class="risk-list">
+          <li>Too-good-to-be-true pricing</li>
+          <li>Cash-on-delivery only</li>
+          <li>No real brand / company details</li>
+          <li>Hidden verification steps</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <section class="content">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-left">
+          <h1 class="hero-title">Premium products.<br/>Suspicious website.</h1>
+          <p class="hero-subtitle">
+            Explore this <span class="highlight">safe demo</span> to see how easily
+            you can be tricked into sharing your details, camera, and identity
+            with a malicious site.
+          </p>
+          <div class="hero-meta">
+            <div class="hero-chip">
+              <span class="hero-dot"></span> Simulated Scam Flow
+            </div>
+            <div class="hero-chip">
+              <span class="hero-dot hero-dot-yellow"></span> Identity Capture Demo
+            </div>
+            <div class="hero-chip hero-chip-outline">
+              Built with FastAPI • Electron • Render
+            </div>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="hero-card">
+            <div class="hero-card-header">
+              <span class="hero-card-title">Live Activity</span>
+              <span class="hero-card-tag">Observer Mode</span>
+            </div>
+            <div class="hero-stats-row">
+              <div class="hero-stat-box">
+                <div class="hero-stat-label">Active sessions</div>
+                <div class="hero-stat-value">03</div>
+                <div class="hero-stat-sub">Simulated users on site</div>
+              </div>
+              <div class="hero-stat-box">
+                <div class="hero-stat-label">Captured selfies</div>
+                <div class="hero-stat-value">12</div>
+                <div class="hero-stat-sub">Demo-only, consented</div>
+              </div>
+            </div>
+            <div class="hero-ticker">
+              <span class="ticker-dot"></span>
+              <span class="ticker-text">
+                Reminder: This is a <strong>controlled cyber awareness project</strong>,
+                not a real store. Do not enter real payment details.
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCT GRID -->
+      <section class="products-panel">
+        <div class="products-header">
+          <div>
+            <h2 class="section-title">Featured “Deals” (Demo)</h2>
+            <p class="section-subtitle">
+              All items below are fake. The goal is to show how scammers use premium
+              looking products to bait users.
+            </p>
+          </div>
+          <div class="view-toggle">
+            <span class="view-label">View mode</span>
+            <div class="pill-toggle">
+              <span class="pill-toggle-option active">Grid</span>
+              <span class="pill-toggle-option">Compact</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="products-grid" class="product-grid"></div>
+      </section>
+    </section>
   </main>
+
+  <footer class="footer">
+    <span>PROJECT KRS — Cyber Awareness Simulation</span>
+    <span>Backend: FastAPI • Desktop Admin: Electron • Deployed on Render</span>
+  </footer>
 
   <script src="js/main.js"></script>
 </body>

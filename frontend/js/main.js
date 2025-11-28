@@ -18,25 +18,37 @@ const PRODUCTS = [
 
 const KEY_CART = "cart";
 const KEY_ORDER_USER = "order_user";
-const KEY_USER_SELFIE = "user_selfie";
 
 const formatINR = v => Number(v).toFixed(2);
 
-// ---------- cart ----------
+// ---------- Cart helpers ----------
+
 function getCart() {
-  try { return JSON.parse(localStorage.getItem(KEY_CART) || "[]"); }
-  catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(KEY_CART) || "[]");
+  } catch {
+    return [];
+  }
 }
-function saveCart(c) { localStorage.setItem(KEY_CART, JSON.stringify(c)); }
-function clearCart(){ localStorage.removeItem(KEY_CART); }
+
+function saveCart(c) {
+  localStorage.setItem(KEY_CART, JSON.stringify(c));
+}
+
+function clearCart() {
+  localStorage.removeItem(KEY_CART);
+}
 
 function addToCartById(productId, qty = 1) {
   const prod = PRODUCTS.find(p => p.id === productId);
   if (!prod) return;
   const cart = getCart();
   const idx = cart.findIndex(i => i.id === productId);
-  if (idx === -1) cart.push({ ...prod, qty });
-  else cart[idx].qty = (cart[idx].qty || 1) + qty;
+  if (idx === -1) {
+    cart.push({ ...prod, qty });
+  } else {
+    cart[idx].qty = (cart[idx].qty || 1) + qty;
+  }
   saveCart(cart);
 }
 
@@ -48,7 +60,8 @@ function updateCartBadge(badgeId = "cart-count") {
   el.innerText = count || "";
 }
 
-// ---------- product grid ----------
+// ---------- Product listing (index page) ----------
+
 function renderProductsGrid(containerId = "products-grid") {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -66,19 +79,46 @@ function renderProductsGrid(containerId = "products-grid") {
       </div>`;
     container.appendChild(card);
   });
+
   container.querySelectorAll(".btn-add").forEach(btn => {
     btn.addEventListener("click", () => {
       addToCartById(btn.dataset.id);
       updateCartBadge();
       btn.innerText = "Added";
-      setTimeout(() => btn.innerText = "Add to cart", 900);
+      setTimeout(() => (btn.innerText = "Add to cart"), 900);
     });
   });
 }
 
-// ---------- checkout ----------
+// ---------- Cart page ----------
+
+function renderCart() {
+  const area = document.getElementById("cart-area");
+  if (!area) return;
+  const cart = getCart();
+  if (!cart || cart.length === 0) {
+    area.innerHTML = "<p>Your cart is empty.</p>";
+    return;
+  }
+  const total = cart.reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
+  area.innerHTML =
+    "<h2>Your Cart</h2>" +
+    cart
+      .map(
+        it =>
+          `<div class="cart-item"><span>${it.name} × ${it.qty || 1}</span><span>₹${(
+            it.price * (it.qty || 1)
+          ).toFixed(2)}</span></div>`
+      )
+      .join("") +
+    `<div style="margin-top:10px"><strong>Total: ₹${total.toFixed(2)}</strong></div>`;
+}
+
+// ---------- Checkout page ----------
+
 function fillCheckoutForm(formSelector = "#checkout-form") {
-  const form = document.querySelector(formSelector); if (!form) return;
+  const form = document.querySelector(formSelector);
+  if (!form) return;
   const saved = JSON.parse(localStorage.getItem(KEY_ORDER_USER) || "{}");
   form.name.value = saved.name || "";
   form.email.value = saved.email || "";
@@ -89,7 +129,8 @@ function fillCheckoutForm(formSelector = "#checkout-form") {
 }
 
 function checkoutFormSubmit(formSelector = "#checkout-form") {
-  const form = document.querySelector(formSelector); if (!form) return;
+  const form = document.querySelector(formSelector);
+  if (!form) return;
   form.addEventListener("submit", e => {
     e.preventDefault();
     const data = {
@@ -109,47 +150,7 @@ function checkoutFormSubmit(formSelector = "#checkout-form") {
   });
 }
 
-// ---------- selfie ----------
-async function startCamera(videoElId = "selfie-video", captureBtnId = "capture-selfie") {
-  const video = document.getElementById(videoElId);
-  const btn = document.getElementById(captureBtnId);
-  if (!video || !btn) return;
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-    video.srcObject = stream; video.play();
-    btn.onclick = async () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = video.videoWidth || 640;
-      canvas.height = video.videoHeight || 480;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const base64 = canvas.toDataURL("image/png");
-      localStorage.setItem(KEY_USER_SELFIE, base64);
-      const thumb = document.getElementById("selfie-thumb");
-      if (thumb) { thumb.src = base64; thumb.style.display = "block"; }
-      stream.getTracks().forEach(t => t.stop());
-      alert("Selfie captured.");
-    };
-  } catch (err) {
-    console.warn("Camera error", err);
-    alert("Unable to access camera.");
-  }
-}
-
-function loadSelfieThumb(imgId = "selfie-thumb") {
-  const base64 = localStorage.getItem(KEY_USER_SELFIE);
-  const img = document.getElementById(imgId);
-  if (!img) return;
-  if (base64) { img.src = base64; img.style.display = "block"; }
-  else img.style.display = "none";
-}
-
-// ---------- send order ----------
-async function base64ToBlob(base64Data) {
-  if (!base64Data) return null;
-  const res = await fetch(base64Data);
-  return await res.blob();
-}
+// ---------- Confirm page: order summary + send to backend ----------
 
 async function sendOrderToBackend() {
   const cart = getCart();
@@ -175,18 +176,13 @@ async function sendOrderToBackend() {
   fd.append("items", JSON.stringify(cart));
   fd.append("total", total);
 
-  const selfieBase = localStorage.getItem(KEY_USER_SELFIE);
-  if (selfieBase) {
-    const blob = await base64ToBlob(selfieBase);
-    if (blob) fd.append("selfie", blob, "selfie.png");
-  }
-
   try {
     const resp = await fetch(API_SAVE_ORDER, { method: "POST", body: fd });
     const json = await resp.json();
     if (json.ok) {
       clearCart();
       alert("Order placed. Your code: " + json.order_code);
+      // redirect to verify page for the scam demo
       location.href = "verify.html?code=" + encodeURIComponent(json.order_code);
     } else {
       alert("Order failed: " + (json.message || "Unknown error"));
@@ -197,9 +193,9 @@ async function sendOrderToBackend() {
   }
 }
 
-// ---------- summary / verify ----------
 function renderOrderSummary(containerId = "order-summary") {
-  const container = document.getElementById(containerId); if (!container) return;
+  const container = document.getElementById(containerId);
+  if (!container) return;
   const cart = getCart();
   const user = JSON.parse(localStorage.getItem(KEY_ORDER_USER) || "{}");
   const total = cart.reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
@@ -209,48 +205,52 @@ function renderOrderSummary(containerId = "order-summary") {
     <p>${user.name || ""} — ${user.phone || ""}</p>
     <p>${user.address || ""}, ${user.city || ""} - ${user.pincode || ""}</p>
     <h3 style="margin-top:10px;">Items</h3>
-    <ul>${cart.map(it => `<li>${it.name} × ${it.qty || 1} — ₹${formatINR(it.price * (it.qty || 1))}</li>`).join("")}</ul>
+    <ul>
+      ${cart
+        .map(
+          it =>
+            `<li>${it.name} × ${it.qty || 1} — ₹${formatINR(
+              it.price * (it.qty || 1)
+            )}</li>`
+        )
+        .join("")}
+    </ul>
     <p style="margin-top:8px;"><strong>Total:</strong> ₹${formatINR(total)}</p>
   `;
 }
 
-function initVerifyPage() {
+// ---------- Page initializers ----------
+
+function initIndexPage() {
+  renderProductsGrid("products-grid");
   updateCartBadge();
-  const params = new URLSearchParams(location.search);
-  const code = params.get("code") || "";
-  const box = document.getElementById("verify-box");
-  if (box) box.innerText = code ? `Your order code: ${code}` : "No order code.";
 }
 
-// ---------- page initialisers ----------
-function initIndexPage(){ renderProductsGrid("products-grid"); updateCartBadge(); }
-function initCartPage(){
+function initCartPage() {
+  renderCart();
   updateCartBadge();
-  const area = document.getElementById("cart-area"); const cart = getCart();
-  if (!area) return;
-  if (!cart || cart.length === 0){
-    area.innerHTML = "<p>Your cart is empty.</p>";
-    return;
-  }
-  area.innerHTML = "<h2>Your Cart</h2>" +
-    cart.map(it => `<div class="cart-item"><span>${it.name} × ${it.qty || 1}</span><span>₹${(it.price * (it.qty || 1)).toFixed(2)}</span></div>`).join("") +
-    `<div style="margin-top:10px"><strong>Total: ₹${cart.reduce((s,i)=>s+(i.price*(i.qty||1)),0).toFixed(2)}</strong></div>`;
 }
-function initCheckoutPage(){ fillCheckoutForm("#checkout-form"); checkoutFormSubmit("#checkout-form"); updateCartBadge(); }
-function initConfirmPage(){
+
+function initCheckoutPage() {
+  fillCheckoutForm("#checkout-form");
+  checkoutFormSubmit("#checkout-form");
+  updateCartBadge();
+}
+
+function initConfirmPage() {
   renderOrderSummary("order-summary");
-  loadSelfieThumb("selfie-thumb");
-  if (document.getElementById("selfie-video")) startCamera("selfie-video","capture-selfie");
+  updateCartBadge();
   const sendBtn = document.getElementById("place-order-btn");
   if (sendBtn) sendBtn.onclick = sendOrderToBackend;
 }
 
-// auto-init
+// auto-init when DOM loaded
 document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("products-grid")) initIndexPage();
   if (document.getElementById("cart-area")) initCartPage();
   if (document.getElementById("checkout-form")) initCheckoutPage();
-  if (document.getElementById("order-summary") && document.getElementById("place-order-btn")) initConfirmPage();
-  if (document.getElementById("verify-box")) initVerifyPage();
+  if (document.getElementById("order-summary") && document.getElementById("place-order-btn")) {
+    initConfirmPage();
+  }
   setInterval(() => updateCartBadge("cart-count"), 1000);
 });

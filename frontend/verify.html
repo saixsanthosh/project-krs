@@ -18,14 +18,142 @@
 <main>
   <section class="verify-container">
     <h2>Order Verification (Demo)</h2>
-    <p id="verify-box"></p>
-    <p class="note">
-      This site is a cyber-awareness demo. Real scammers might track you across pages
-      once you enter details or press "Allow" on camera prompts.
-    </p>
+
+    <p id="verify-code-line" class="note"></p>
+
+    <div class="consent-box">
+      <h3>Camera demo (with your consent)</h3>
+      <p class="note">
+        This is a <strong>cyber-awareness demo</strong>. Real scam websites can ask for camera
+        permission and then capture your face without showing any preview.
+      </p>
+      <p class="note">
+        If you click <strong>“Start scam demo”</strong> and then press <strong>“Allow”</strong> on the
+        browser camera pop-up, this page will:
+      </p>
+      <ul class="note">
+        <li>Turn on your camera for a few seconds</li>
+        <li>Take <strong>one hidden snapshot</strong> (no live preview shown)</li>
+        <li>Send it to the server linked to this order code</li>
+      </ul>
+      <p class="note">
+        By continuing, you <strong>agree</strong> to this demo capture. If you don’t want that,
+        simply do not start the demo or deny the camera permission.
+      </p>
+
+      <button id="start-demo-btn" class="checkout-btn">
+        Start scam demo (I consent)
+      </button>
+
+      <p id="demo-status" class="note" style="margin-top:10px;"></p>
+    </div>
+
+    <div id="result-box" class="consent-box" style="display:none; margin-top:18px;">
+      <h3>What was captured</h3>
+      <p class="note">
+        Below is the selfie that was captured without showing a preview — this mimics
+        how a malicious site could work after you press “Allow”.
+      </p>
+      <img id="captured-preview" style="max-width:240px;border-radius:8px;display:block;margin-top:8px;"/>
+    </div>
   </section>
 </main>
 
-<script src="js/main.js"></script>
+<script>
+// === CONFIG ===
+const API_BASE = ""; // same origin
+const SAVE_SELFIE_ENDPOINT = "/save_selfie";
+
+function getOrderCodeFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("code") || params.get("order") || "";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const code = getOrderCodeFromUrl();
+  const codeLine = document.getElementById("verify-code-line");
+  if (codeLine) {
+    codeLine.textContent = code
+      ? `Order code linked to this demo: ${code}`
+      : "No order code found in URL.";
+  }
+
+  const btn = document.getElementById("start-demo-btn");
+  const statusEl = document.getElementById("demo-status");
+  const resultBox = document.getElementById("result-box");
+  const imgPreview = document.getElementById("captured-preview");
+
+  btn.onclick = async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      statusEl.textContent = "Camera not supported on this device.";
+      return;
+    }
+
+    statusEl.textContent = "Requesting camera permission...";
+    let stream = null;
+
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      statusEl.textContent = "Camera allowed. Capturing hidden snapshot...";
+
+      // create hidden video element
+      const video = document.createElement("video");
+      video.style.position = "fixed";
+      video.style.left = "-9999px";
+      video.style.top = "-9999px";
+      document.body.appendChild(video);
+
+      video.srcObject = stream;
+      await video.play();
+
+      // wait a bit to get a clear frame
+      await new Promise(res => setTimeout(res, 1200));
+
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const dataUrl = canvas.toDataURL("image/png");
+      imgPreview.src = dataUrl;
+      resultBox.style.display = "block";
+
+      // stop camera
+      stream.getTracks().forEach(t => t.stop());
+      video.remove();
+
+      statusEl.textContent = "Uploading snapshot to server...";
+
+      // upload to backend for this order
+      const blob = await (await fetch(dataUrl)).blob();
+      const fd = new FormData();
+      if (code) fd.append("order_id", code);
+      fd.append("file", blob, "verify_selfie.png");
+
+      try {
+        const resp = await fetch(API_BASE + SAVE_SELFIE_ENDPOINT, {
+          method: "POST",
+          body: fd
+        });
+        if (resp.ok) {
+          statusEl.textContent = "Snapshot uploaded. Demo complete — this is how scammers can use your camera.";
+        } else {
+          statusEl.textContent = "Snapshot taken, but upload failed (demo still valid).";
+        }
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "Snapshot taken, but network error during upload.";
+      }
+
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = "Camera access denied or failed. Demo cancelled.";
+      if (stream) stream.getTracks().forEach(t => t.stop());
+    }
+  };
+});
+</script>
+
 </body>
 </html>

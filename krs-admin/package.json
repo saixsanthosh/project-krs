@@ -1,11 +1,22 @@
 {
   "name": "krs-admin",
   "version": "1.0.0",
+  "description": "Project KRS Admin Panel",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.projectkrs.admin",
+    "productName": "Project KRS Admin",
+    "win": {
+      "target": "nsis",
+      "artifactName": "Project-KRS-Admin-Setup-${version}.exe"
+    }
   },
   "devDependencies": {
-    "electron": "^33.0.0"
+    "electron": "^33.0.0",
+    "electron-builder": "^24.13.3"
   }
 }
