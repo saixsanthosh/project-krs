@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin — PROJECT KRS</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="top-bar">
+    <div class="logo">PROJECT KRS — Admin</div>
+  </header>
+
+  <main class="main">
+    <h2>Orders</h2>
+    <div id="orders"></div>
+
+    <h2 style="margin-top:24px;">Selfies</h2>
+    <div id="selfies" class="selfie-grid"></div>
+  </main>
+
+  <script>
+    async function loadOrders() {
+      const el = document.getElementById('orders');
+      try {
+        const res = await fetch('/get_orders');
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) {
+          el.innerHTML = '<p>No orders yet.</p>';
+          return;
+        }
+        el.innerHTML = '<table class="table"><thead><tr><th>ID</th><th>Code</th><th>Name</th><th>Phone</th><th>Total</th><th>Time</th><th>Selfie</th></tr></thead><tbody>' +
+          data.map(o => `
+            <tr>
+              <td>${o.id}</td>
+              <td>${o.order_code}</td>
+              <td>${o.name}</td>
+              <td>${o.phone}</td>
+              <td>₹${(o.total || 0).toFixed ? o.total.toFixed(2) : o.total}</td>
+              <td>${o.timestamp}</td>
+              <td>${o.selfie_filename ? `<a href="/selfie/${encodeURIComponent(o.selfie_filename)}" target="_blank">View</a>` : '-'}</td>
+            </tr>
+          `).join('') + '</tbody></table>';
+      } catch (e) {
+        console.error(e);
+        el.innerHTML = '<p>Error loading orders.</p>';
+      }
+    }
+
+    async function loadSelfies() {
+      const container = document.getElementById('selfies');
+      try {
+        const res = await fetch('/list_selfies');
+        const files = await res.json();
+        if (!Array.isArray(files) || files.length === 0) {
+          container.innerHTML = '<p>No selfies.</p>';
+          return;
+        }
+        container.innerHTML = '';
+        files.forEach(f => {
+          const img = document.createElement('img');
+          img.src = '/selfie/' + encodeURIComponent(f);
+          img.className = 'selfie-admin-thumb';
+          container.appendChild(img);
+        });
+      } catch (e) {
+        console.error(e);
+        container.innerHTML = '<p>Error loading selfies.</p>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadOrders();
+      loadSelfies();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+/* ============================================================
+   PROJECT KRS — NEON HOLOGRAM UI BASE
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Share Tech Mono", monospace;
+}
+
+body {
+    background: #02030f;
+    overflow: hidden;
+}
+
+/* ========= HOLOGRAM BACKGROUND GRID ========= */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at center, rgba(0, 185, 255, 0.15), transparent 70%),
+        repeating-linear-gradient(
+            to bottom,
+            rgba(0, 255, 255, 0.05) 0,
+            rgba(0, 255, 255, 0.05) 2px,
+            transparent 3px,
+            transparent 6px
+        ),
+        repeating-linear-gradient(
+            to right,
+            rgba(0, 255, 255, 0.04) 0,
+            rgba(0, 255, 255, 0.04) 2px,
+            transparent 3px,
+            transparent 6px
+        );
+    pointer-events: none;
+    z-index: -2;
+}
+
+/* ========= SCAN-LINE OVERLAY ========= */
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 255, 255, 0.04) 0px,
+        rgba(0, 255, 255, 0.04) 1px,
+        transparent 2px,
+        transparent 4px
+    );
+    opacity: 0.6;
+    z-index: -1;
+}
+
+/* ========= NEON COLOR VARIABLES ========= */
+
+:root {
+    --cyan: #00eaff;
+    --purple: #bc00ff;
+    --pink: #ff00a6;
+    --glass: rgba(255,255,255,0.04);
+}
+
+/* ========= TOP BAR ========= */
+
+#topbar {
+    height: 55px;
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
+    border-bottom: 2px solid var(--cyan);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 15px;
+    box-shadow: 0 0 15px var(--cyan);
+}
+
+#logo {
+    color: var(--cyan);
+    font-size: 20px;
+    text-shadow: 0 0 12px var(--cyan);
+}
+
+#search-box {
+    flex: 1;
+    height: 32px;
+    border: 1px solid var(--cyan);
+    background: rgba(0,0,0,0.35);
+    color: var(--cyan);
+    padding-left: 10px;
+    outline: none;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 10px var(--cyan);
+}
+
+#refresh-btn {
+    height: 32px;
+    width: 110px;
+    color: var(--cyan);
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--cyan);
+    cursor: pointer;
+    transition: 0.15s;
+    box-shadow: 0 0 10px var(--cyan);
+}
+#refresh-btn:hover {
+    background: var(--cyan);
+    color: #000;
+}
+
+/* ========= THREE COLUMN LAYOUT ========= */
+
+#layout {
+    display: grid;
+    height: calc(100vh - 55px);
+    grid-template-columns: 28% 44% 28%;
+}
+
+/* ========= PANEL BASE ========= */
+
+#left-panel,
+#center-panel,
+#right-panel {
+    padding: 12px;
+    overflow-y: auto;
+    background: rgba(0, 0, 20, 0.3);
+    backdrop-filter: blur(8px);
+    border-right: 2px solid var(--cyan);
+    box-shadow: inset 0 0 15px var(--cyan);
+}
+
+#right-panel {
+    border-right: none;
+}
+
+/* ========= PANEL TITLES ========= */
+
+.panel-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: var(--cyan);
+    text-shadow: 0 0 12px var(--cyan);
+    border-bottom: 1px solid var(--cyan);
+    padding-bottom: 4px;
+}
+
+/* ========= LEFT PANEL — ORDER LIST ========= */
+
+#orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.order-row {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid var(--purple);
+    padding: 8px;
+    transition: 0.15s;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 10px var(--purple);
+}
+
+.order-row:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 15px var(--pink);
+}
+
+/* order text COLORS – this was missing before */
+.order-code {
+    color: var(--cyan);
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+
+.order-small {
+    color: #e0f9ff;
+    font-size: 13px;
+}
+
+/* risk color tags */
+.risk-low  { color: #4cff4c; }
+.risk-mid  { color: #ffe600; }
+.risk-high { color: #ff0047; }
+
+/* ========= CENTER PANEL — DETAILS / MAP / GLOBE / SELFIE ========= */
+
+#order-details {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--cyan);
+    min-height: 180px;
+    padding: 10px;
+    color: var(--cyan);
+    white-space: pre-line;
+    box-shadow: 0 0 15px var(--cyan);
+}
+
+#map {
+    height: 240px;
+    border: 1px solid var(--pink);
+    box-shadow: 0 0 15px var(--pink);
+    margin-top: 10px;
+}
+
+#globe {
+    width: 100%;
+    height: 250px;
+    background: rgba(0, 0, 20, 0.3);
+    border: 1px solid var(--purple);
+    box-shadow: 0 0 20px var(--purple);
+    margin-top: 10px;
+}
+
+#selfie-view {
+    width: 100%;
+    margin-top: 10px;
+    border: 2px solid var(--purple);
+    box-shadow: 0 0 20px var(--purple);
+    background: #000;
+}
+
+/* ========= RIGHT PANEL — NETWORK GRAPH + TERMINAL ========= */
+
+#node-graph {
+    width: 100%;
+    height: 220px;
+    background: radial-gradient(circle at center, rgba(0, 234, 255, 0.12), rgba(0, 0, 0, 0.85));
+    border: 1px solid var(--purple);
+    box-shadow: 0 0 16px var(--purple);
+    display: block;
+}
+
+#terminal {
+    height: calc(100% - 280px);
+    background: #000000b8;
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+    box-shadow: 0 0 20px var(--cyan);
+    overflow-y: scroll;
+    padding: 10px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    margin-top: 10px;
+}
+.term-line { margin-bottom: 3px; text-shadow: 0 0 6px var(--cyan); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: var(--cyan); }
+::-webkit-scrollbar-track { background: #000; }

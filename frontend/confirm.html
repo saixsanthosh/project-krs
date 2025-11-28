@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Confirm Order — Project KRS</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<header>
+  <h1>PROJECT KRS</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="cart.html">Cart <span id="cart-count"></span></a>
+  </nav>
+</header>
+
+<main>
+  <section class="confirm-container">
+    <h2>Review your order</h2>
+    <div id="order-summary"></div>
+
+    <div class="selfie-section">
+      <h3>Verification selfie (demo)</h3>
+      <p class="note">
+        This is a cyber-awareness demo. By capturing a selfie you can see how
+        fake shopping sites can abuse camera access if you carelessly press "Allow".
+      </p>
+      <video id="selfie-video" autoplay playsinline></video>
+      <button id="capture-selfie">Capture selfie</button>
+      <img id="selfie-thumb"
+           style="display:none; margin-top:10px; max-width:220px; border-radius:6px;"/>
+    </div>
+
+    <button id="place-order-btn" class="checkout-btn" style="margin-top:15px;">
+      Place COD Order
+    </button>
+  </section>
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>

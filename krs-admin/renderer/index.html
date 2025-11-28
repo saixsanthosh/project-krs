@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>PROJECT KRS</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+
+<div id="topbar">
+  <div id="logo">PROJECT KRS</div>
+  <input id="search-box" type="text" placeholder="Search order code / phone">
+  <button id="refresh-btn">REFRESH</button>
+</div>
+
+<div id="layout">
+  <div id="left-panel">
+    <div class="panel-title">ORDERS FEED</div>
+    <div id="orders-list"></div>
+  </div>
+
+  <div id="center-panel">
+    <div class="panel-title">ORDER INTEL</div>
+    <div id="order-details"></div>
+
+    <div class="panel-title" style="margin-top:15px;">LOCATION (2D MAP)</div>
+    <div id="map"></div>
+
+    <div class="panel-title" style="margin-top:15px;">HOLOGRAM GLOBE (3D)</div>
+    <div id="globe"></div>
+
+    <div class="panel-title" style="margin-top:15px;">SELFIE</div>
+    <img id="selfie-view" src="" />
+  </div>
+
+  <div id="right-panel">
+    <div class="panel-title">NETWORK GRAPH</div>
+    <canvas id="node-graph"></canvas>
+
+    <div class="panel-title" style="margin-top:10px;">SYSTEM CONSOLE</div>
+    <div id="terminal"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="globe.js"></script>
+<script src="app.js"></script>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    if (typeof initGlobe === "function") initGlobe();
+  });
+</script>
+</body>
+</html>

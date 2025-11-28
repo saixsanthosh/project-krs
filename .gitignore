@@ -1,0 +1,21 @@
+# Python
+venv/
+.venv/
+backend/venv/
+__pycache__/
+*.pyc
+
+# DB + selfies
+backend/database.db
+backend/selfies/
+
+# Node / Electron
+node_modules/
+krs-admin/node_modules/
+krs-admin/out/
+krs-admin/dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

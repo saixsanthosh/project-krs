@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Checkout — Project KRS</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<header>
+  <h1>PROJECT KRS</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="cart.html">Cart <span id="cart-count"></span></a>
+  </nav>
+</header>
+
+<main>
+  <section class="checkout-container">
+    <h2>Checkout</h2>
+    <form id="checkout-form">
+      <label>Name
+        <input type="text" name="name" required />
+      </label>
+      <label>Email
+        <input type="email" name="email" />
+      </label>
+      <label>Phone
+        <input type="tel" name="phone" required />
+      </label>
+      <label>Address
+        <textarea name="address" rows="2"></textarea>
+      </label>
+      <label>City
+        <input type="text" name="city" />
+      </label>
+      <label>Pincode
+        <input type="text" name="pincode" />
+      </label>
+
+      <button type="submit" class="checkout-btn">Continue to confirmation</button>
+    </form>
+  </section>
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>
